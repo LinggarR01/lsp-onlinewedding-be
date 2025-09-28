@@ -24,7 +24,7 @@ CREATE TABLE orders(
 CREATE TABLE orders(
     id_order INT PRIMARY KEY AUTO_INCREMENT,
     id_catalogue INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    cust_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     wedding_date DATE NOT NULL,
@@ -35,14 +35,7 @@ CREATE TABLE orders(
 );
 
 SELECT * FROM orders;
-orders
 SELECT * FROM catalogue;
-
-DROP TABLE orders;
-
-DESCRIBE orders;
-
-ALTER TABLE orders MODIFY phone_number VARCHAR(30);
 
 INSERT INTO catalogue
 (name,price,image,DESCRIPTION)

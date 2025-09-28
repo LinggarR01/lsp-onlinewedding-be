@@ -34,19 +34,19 @@ const OrderController = {
       if (!req.body) {
         return res.status(400).json({ error: 'Request body is required' });
       }
-      const { id_catalogue, name, email, phone_number, wedding_date, STATUS } = req.body;
+      const { id_catalogue, cust_name, email, phone_number, wedding_date, STATUS } = req.body;
 
 
       // Validate required fields
-      if (!id_catalogue || !name || !email || !phone_number || !wedding_date) {
+      if (!id_catalogue || !cust_name || !email || !phone_number || !wedding_date) {
         return res.status(400).json({
-          error: 'All fields are required: id_catalogue, name, email, phone_number, wedding_date'
+          error: 'All fields are required: id_catalogue, cust_name, email, phone_number, wedding_date'
         });
       }
 
       const OrderData = {
         id_catalogue,
-        name,
+        cust_name,
         email,
         phone_number,
         wedding_date,
@@ -78,7 +78,7 @@ const OrderController = {
       }
 
       const { id } = req.params;
-      const { id_catalogue, name, email, phone_number, wedding_date, STATUS } = req.body;
+      const { id_catalogue, cust_name, email, phone_number, wedding_date, STATUS } = req.body;
 
       if (!id || isNaN(id)) {
         return res.status(400).json({ error: 'Invalid Order ID' });
@@ -97,7 +97,7 @@ const OrderController = {
 
       const updateData = {
         id_catalogue: id_catalogue !== undefined ? id_catalogue : currentOrder.id_catalogue,
-        name: name !== undefined ? name : currentOrder.name,
+        cust_name: cust_name !== undefined ? cust_name : currentOrder.cust_name,
         email: email !== undefined ? email : currentOrder.email,
         phone_number: phone_number !== undefined ? phone_number : currentOrder.phone_number,
         wedding_date: wedding_date !== undefined ? wedding_date : currentOrder.wedding_date,

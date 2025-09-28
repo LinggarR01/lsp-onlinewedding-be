@@ -30,13 +30,13 @@ const Order = {
 
   create: (data, callback) => {
     const sql = `
-      INSERT INTO orders (id_catalogue, name, email, phone_number, wedding_date, STATUS) 
+      INSERT INTO orders (id_catalogue, cust_name, email, phone_number, wedding_date, STATUS) 
       VALUES (?, ?, ?, ?, ?, ?)
     `;
     
-    const { id_catalogue, name, email, phone_number, wedding_date, STATUS } = data;
+    const { id_catalogue, cust_name, email, phone_number, wedding_date, STATUS } = data;
 
-    connection.query(sql, [id_catalogue, name, email, phone_number, wedding_date, STATUS || 'pending'], (err, results) => {
+    connection.query(sql, [id_catalogue, cust_name, email, phone_number, wedding_date, STATUS || 'pending'], (err, results) => {
       if (err) return callback(err, null);
       return callback(null, results);
     });
@@ -45,13 +45,13 @@ const Order = {
   update: (id, data, callback) => {
     const sql = `
       UPDATE orders 
-      SET id_catalogue = ?, name = ?, email = ?, phone_number = ?, wedding_date = ?, STATUS = ? 
+      SET id_catalogue = ?, cust_name = ?, email = ?, phone_number = ?, wedding_date = ?, STATUS = ? 
       WHERE id_order = ?
     `;
     
-    const { id_catalogue, name, email, phone_number, wedding_date, STATUS } = data;
+    const { id_catalogue, cust_name, email, phone_number, wedding_date, STATUS } = data;
 
-    connection.query(sql, [id_catalogue, name, email, phone_number, wedding_date, STATUS, id], (err, results) => {
+    connection.query(sql, [id_catalogue, cust_name, email, phone_number, wedding_date, STATUS, id], (err, results) => {
       if (err) return callback(err, null);
       return callback(null, results);
     });
