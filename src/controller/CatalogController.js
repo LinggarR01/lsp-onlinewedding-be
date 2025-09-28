@@ -1,13 +1,12 @@
 const Catalog = require('../model/CatalogModel');
-const path = require('path');
 
 const CatalogController = {
   getAll: (req, res) => {
     console.log('Fetching all catalogs...'); // Debug log
 
     Catalog.getAll((err, results) => {
-      console.log('Callback executed - Error:', err); // Debug error
-      console.log('Callback executed - Results:', results); // Debug results
+      // console.log('Callback executed - Error:', err); // Debug error
+      // console.log('Callback executed - Results:', results); // Debug results
 
       if (err) {
         console.error('Database error:', err.message); // Detailed error log
@@ -76,49 +75,60 @@ const CatalogController = {
     }
   },
 
-  update: (req, res) => {
+  update: async (req, res) => {
     try {
       const { id } = req.params;
       const { name, price, description } = req.body;
 
-      // First, get current catalog data to preserve existing image if no new file
-      Catalog.getById(id, (err, currentCatalog) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
+      // Validasi
+      if (!id || isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid catalog ID' });
+      }
 
-        if (!currentCatalog || currentCatalog.length === 0) {
-          return res.status(404).json({ error: 'Catalog not found' });
-        }
-
-        let image;
-        if (req.file) {
-          // Use new uploaded image
-          image = req.file.filename;
-        } else {
-          // Keep existing image
-          image = currentCatalog[0].image;
-        }
-
-        const catalogData = {
-          name: name || currentCatalog[0].name,
-          price: price ? parseFloat(price) : currentCatalog[0].price,
-          image: image,
-          description: description || currentCatalog[0].description,
-        };
-
-        Catalog.update(id, catalogData, (err, results) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }
-          return res.status(200).json({
-            message: 'Catalog updated successfully',
-            image: image,
-          });
+      // Get current data dengan Promise
+      const currentCatalog = await new Promise((resolve, reject) => {
+        Catalog.getById(id, (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
         });
       });
+
+      if (!currentCatalog || currentCatalog.length === 0) {
+        return res.status(404).json({ error: 'Catalog not found' });
+      }
+
+      const currentData = currentCatalog;
+
+      // Prepare update data
+      const updateData = {
+        name: name !== undefined ? name : currentData.name,
+        price: price !== undefined ? parseFloat(price) : currentData.price,
+        image: req.file ? req.file.filename : currentData.image,
+        description:
+          description !== undefined ? description : currentData.description,
+        updated_at: new Date(),
+      };
+
+      // Execute update dengan Promise
+      const results = await new Promise((resolve, reject) => {
+        Catalog.update(id, updateData, (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
+        });
+      });
+
+      if (results.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ error: 'No changes made or catalog not found' });
+      }
+
+      res.status(200).json({
+        message: 'Catalog updated successfully',
+        data: updateData,
+      });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   },
 
